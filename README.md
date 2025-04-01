@@ -1,0 +1,1 @@
+我想做一個台灣森林步道查詢app，請參考台灣政府開放平台，並將該平台所有的林業保育署所轄自然步道軌跡圖作為data base (@https://data.gov.tw/datasets/search?p=1&size=10&s=_score_desc&rct=253&rtt=9649 )，做出一個查詢步道，從台灣地圖知道步道位置，拉近還可以看到步道的細部軌跡地圖。請使用UX的流程思維，並使用pixabay的opensource圖庫，且融入marketing思維，提出一個app prototye供參考。需提供html檔案。
