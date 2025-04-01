@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>台灣森林步道探索 - 山林漫步</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 导航栏 -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-tree"></i>
+                <h1>山林漫步</h1>
+            </div>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="#" class="active" data-view="map"><i class="fas fa-map-marked-alt"></i> 步道地圖</a></li>
+                    <li><a href="#" data-view="trails"><i class="fas fa-hiking"></i> 步道列表</a></li>
+                    <li><a href="#" data-view="favorites"><i class="fas fa-heart"></i> 我的收藏</a></li>
+                    <li><a href="#" data-view="about"><i class="fas fa-info-circle"></i> 關於</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <!-- 地图视图 -->
+            <section id="map-view" class="view active">
+                <div class="search-box">
+                    <div class="search-input">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="search-input" placeholder="搜尋步道名稱、位置或特色...">
+                    </div>
+                    <div class="filter-button">
+                        <button id="filter-btn"><i class="fas fa-filter"></i> 篩選</button>
+                    </div>
+                </div>
+                <div id="map" class="map-container">
+                    <!-- 添加地圖圖例和控制面板 -->
+                    <div class="map-legend">
+                        <h3>圖例</h3>
+                        <div class="legend-item">
+                            <i class="fas fa-mountain" style="color: #27ae60;"></i>
+                            <span>步道起點</span>
+                        </div>
+                        
+                        <!-- 添加雪霸登山步道圖例 -->
+                        <h3>雪霸登山步道</h3>
+                        <div class="legend-item">
+                            <span class="legend-line" style="background-color: #ff0000;"></span>
+                            <span>高難度步道</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-line dashed" style="background-color: #ff7800;"></span>
+                            <span>中難度步道</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-line dotted" style="background-color: #3388ff;"></span>
+                            <span>低難度步道</span>
+                        </div>
+                        <div class="legend-item">
+                            <input type="checkbox" id="toggle-hiking-trails" checked>
+                            <label for="toggle-hiking-trails">顯示登山步道 (縮放≥10級)</label>
+                        </div>
+                        <div class="legend-tip">
+                            <i class="fas fa-info-circle"></i>
+                            <small>雙擊雪霸國家公園選項可快速定位</small>
+                        </div>
+                        
+                        <h3>國家公園</h3>
+                        <div class="legend-controls">
+                            <div class="legend-item">
+                                <input type="checkbox" id="toggle-all-parks">
+                                <label for="toggle-all-parks">全部國家公園</label>
+                            </div>
+                            <div class="legend-item">
+                                <span class="color-box" style="background-color: #1E6442;"></span>
+                                <input type="checkbox" id="toggle-yushan">
+                                <label for="toggle-yushan">玉山國家公園</label>
+                            </div>
+                            <div class="legend-item">
+                                <span class="color-box" style="background-color: #277553;"></span>
+                                <input type="checkbox" id="toggle-taroko">
+                                <label for="toggle-taroko">太魯閣國家公園</label>
+                            </div>
+                            <div class="legend-item">
+                                <span class="color-box" style="background-color: #378667;"></span>
+                                <input type="checkbox" id="toggle-shei-pa">
+                                <label for="toggle-shei-pa">雪霸國家公園</label>
+                            </div>
+                            <div class="legend-item">
+                                <span class="color-box" style="background-color: #4E9F78;"></span>
+                                <input type="checkbox" id="toggle-kenting">
+                                <label for="toggle-kenting">墾丁國家公園</label>
+                            </div>
+                            <div class="legend-item">
+                                <span class="color-box" style="background-color: #5E5E5E;"></span>
+                                <input type="checkbox" id="toggle-yangmingshan">
+                                <label for="toggle-yangmingshan">陽明山國家公園</label>
+                            </div>
+                            <div class="legend-item">
+                                <span class="color-box" style="background-color: #60A5A9;"></span>
+                                <input type="checkbox" id="toggle-taijiang">
+                                <label for="toggle-taijiang">台江國家公園</label>
+                            </div>
+                            <div class="legend-item">
+                                <span class="color-box" style="background-color: #B09A5B;"></span>
+                                <input type="checkbox" id="toggle-kinmen">
+                                <label for="toggle-kinmen">金門國家公園</label>
+                            </div>
+                            <div class="legend-item">
+                                <span class="color-box" style="background-color: #3D85B0;"></span>
+                                <input type="checkbox" id="toggle-dongsha">
+                                <label for="toggle-dongsha">東沙環礁國家公園</label>
+                            </div>
+                            <div class="legend-item">
+                                <span class="color-box" style="background-color: #5D8EB3;"></span>
+                                <input type="checkbox" id="toggle-penghu">
+                                <label for="toggle-penghu">澎湖南方四島國家公園</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 步道列表视图 -->
+            <section id="trails-view" class="view">
+                <div class="list-container">
+                    <div class="list-header">
+                        <h2>全台步道列表</h2>
+                        <div class="sort-options">
+                            <select id="sort-select">
+                                <option value="name">按名稱排序</option>
+                                <option value="popularity">按人氣排序</option>
+                                <option value="length">按長度排序</option>
+                                <option value="difficulty">按難度排序</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="trails-list" class="trails-list">
+                        <!-- 步道列表将通过JS动态生成 -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- 收藏视图 -->
+            <section id="favorites-view" class="view">
+                <div class="favorites-container">
+                    <h2>我的收藏步道</h2>
+                    <div id="favorites-list" class="trails-list">
+                        <!-- 收藏步道将通过JS动态生成 -->
+                        <div class="empty-state">
+                            <i class="fas fa-heart-broken"></i>
+                            <p>您尚未收藏任何步道</p>
+                            <button class="explore-btn">立即探索</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 关于视图 -->
+            <section id="about-view" class="view">
+                <div class="about-container">
+                    <h2>關於山林漫步</h2>
+                    <div class="about-content">
+                        <div class="app-intro">
+                            <h3>應用簡介</h3>
+                            <p>「山林漫步」是一款專為台灣森林步道愛好者設計的應用，我們整合了台灣林業保育署所轄的自然步道資料，提供完整的步道資訊與地圖導覽服務。無論您是資深山友還是初次體驗森林步道的新手，都能透過本應用探索台灣豐富的自然資源。</p>
+                        </div>
+                        <div class="data-source">
+                            <h3>資料來源</h3>
+                            <p>本應用程式的步道資料主要來自台灣政府開放平台及林業保育署所提供的開放資料集，包含步道基本資料、路線軌跡圖等。</p>
+                            <p>資料授權方式遵循政府資料開放平台資料使用規範。</p>
+                            <a href="https://data.gov.tw/" target="_blank">政府資料開放平台</a>
+                            <a href="https://recreation.forest.gov.tw/" target="_blank">台灣山林悠遊網</a>
+                        </div>
+                        <div class="feature-intro">
+                            <h3>主要功能</h3>
+                            <ul>
+                                <li>台灣步道地圖查詢與瀏覽</li>
+                                <li>步道詳細資訊與軌跡顯示</li>
+                                <li>步道收藏與個人偏好設定</li>
+                                <li>路線規劃與導航</li>
+                                <li>附近設施查詢</li>
+                            </ul>
+                        </div>
+                        <div class="team-info">
+                            <h3>開發團隊</h3>
+                            <p>山林漫步團隊致力於推廣台灣自然資源，讓更多人能夠輕鬆探索森林步道的美麗與奧妙。</p>
+                            <p>版權所有 © 2024 山林漫步</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- 步道详情弹窗 -->
+        <div id="trail-detail-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="detail-trail-name">步道名稱</h2>
+                    <span class="close">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div class="trail-images">
+                        <div id="trail-main-image" class="main-image"></div>
+                        <div class="image-thumbnails">
+                            <div class="thumbnail"></div>
+                            <div class="thumbnail"></div>
+                            <div class="thumbnail"></div>
+                        </div>
+                    </div>
+                    <div class="trail-info">
+                        <div class="info-group">
+                            <div class="info-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span id="detail-location">地點</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-ruler"></i>
+                                <span id="detail-length">長度</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-mountain"></i>
+                                <span id="detail-elevation">海拔</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-hiking"></i>
+                                <span id="detail-difficulty">難度</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-clock"></i>
+                                <span id="detail-time">所需時間</span>
+                            </div>
+                        </div>
+                        <div class="trail-description">
+                            <h3>步道簡介</h3>
+                            <p id="detail-description">步道描述內容...</p>
+                        </div>
+                        <div class="trail-features">
+                            <h3>景點特色</h3>
+                            <ul id="detail-features">
+                                <!-- 步道特色将通过JS动态生成 -->
+                            </ul>
+                        </div>
+                        <div class="trail-facilities">
+                            <h3>周邊設施</h3>
+                            <div class="facilities-icons" id="detail-facilities">
+                                <!-- 周边设施将通过JS动态生成 -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="trail-map">
+                        <h3>步道軌跡</h3>
+                        <div id="detail-map" class="detail-map-container"></div>
+                    </div>
+                    <div class="trail-actions">
+                        <button id="add-favorite" class="btn-favorite"><i class="far fa-heart"></i> 收藏</button>
+                        <button class="btn-share"><i class="fas fa-share-alt"></i> 分享</button>
+                        <button class="btn-navigate"><i class="fas fa-directions"></i> 導航</button>
+                        <button class="btn-download"><i class="fas fa-download"></i> 下載GPX</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="app.js"></script>
+</body>
+</html> 
