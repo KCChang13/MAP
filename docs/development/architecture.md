@@ -25,6 +25,42 @@
 +------------------+     +------------------+     +------------------+
 ```
 
+```mermaid
+flowchart TD
+    subgraph UI_Layer[使用者界面層（UI Layer）]
+        UI1[HTML 結構]
+        UI2[CSS 樣式]
+        UI3[JavaScript 行為]
+    end
+
+    subgraph Business_Layer[業務邏輯層（Business Layer）]
+        B1[輸入驗證]
+        B2[流程控制]
+        B3[狀態管理]
+    end
+
+    subgraph Data_Layer[數據層（Data Layer）]
+        D1[資料讀取]
+        D2[資料儲存]
+        D3[LocalStorage 緩存]
+    end
+
+    %% UI -> Business 說明
+    UI1 -->|傳送使用者輸入| B1
+    UI2 --> B2
+    UI3 -->|觸發事件邏輯| B2
+
+    %% Business -> Data 說明
+    B1 -->|驗證後請求資料| D1
+    B2 --> D2
+    B3 --> D3
+
+    %% Data -> UI 回傳說明
+    D1 -->|顯示查詢結果| UI1
+    D3 -->|恢復使用者狀態| UI3
+```
+
+
 ### 2.2 模組架構
 
 1. 核心模組
